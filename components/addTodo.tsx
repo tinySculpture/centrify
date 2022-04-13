@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 
 export default function AddTodo() {
     const [text, setText] = useState("");
@@ -11,15 +12,16 @@ export default function AddTodo() {
     };
 
     return (
-        <View style={[styles.inputContainer, styles.shadow]}>
-            <TextInput 
+        <View style={styles.inputContainer}>
+            {/* <TextInput 
                 placeholder='Add New Item'
                 onChangeText={changeHandler}
                 style={styles.input}
             />
             <TouchableOpacity onPress={() => console.log("Hi")}>
                 <Icon name="plus" size={15} color="#fff" style={styles.add} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <BottomSheetTextInput />
         </View>
     )
 }

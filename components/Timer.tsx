@@ -13,7 +13,6 @@ export default function Timer({time, currentTimerState}) {
     const [key, setKey] = useState(0)
     
     useEffect(() => {
-      console.log(currentTimerState);
       setIsCountDown(false);
       setBtnText("Play")
     }, [currentTimerState.state])
@@ -89,7 +88,7 @@ export default function Timer({time, currentTimerState}) {
                 isPlaying={isCountDown}
                 duration={time}
                 initialRemainingTime={time}
-                colors={['rgb(255, 132, 4)']}
+                colors={"#FF8404"}
                 size={250}
                 strokeWidth={15}
             >

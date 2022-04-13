@@ -1,11 +1,14 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
 import Timer from './Timer';
+import BottomSheet, { BottomSheetTextInput, BottomSheetFlatList, BottomSheetView } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // app colors: 
 // Main Orange #FF8404, rgb(255, 132, 4)
 
 export default function PomodoroTimer() {
+    // sets timer state and times
     var [timerState, setTimerState] = useState({
         studyTime: 30,
         restTime: 10,
@@ -14,7 +17,8 @@ export default function PomodoroTimer() {
 
     var currentTime;
     var isStudying = true;
- 
+
+    // changes timer state to its opposite
     if (timerState.state == 'study') {
         currentTime = timerState.studyTime;
         isStudying = true
@@ -26,12 +30,15 @@ export default function PomodoroTimer() {
 
     return(
         <View style={styles.timerContainer}>
+            {/* State button container */}
             <View style={styles.stateContainer}>
+                {/* State buttons */}
                 <TouchableOpacity onPress={() =>
                 setTimerState({
                     ...timerState,
                     state: 'study',
                 })}>
+                    {/* Tertiary operators to change styles based on state */}
                     <View style={[styles.stateButton, isStudying ? {backgroundColor: "#FF8404"} : styles.stateButton]}>
                         <Text style={[{textAlign: "center"}, isStudying ? {color: "#FFF"} : {color: "#000"}]}>Study</Text>
                     </View>
@@ -46,7 +53,10 @@ export default function PomodoroTimer() {
                     </View>
                 </TouchableOpacity>
             </View>
+
+            {/* Timer Component */}
             <Timer time={currentTime} currentTimerState={timerState}/>
+            
         </View>
     )
 
@@ -55,8 +65,9 @@ export default function PomodoroTimer() {
 const styles = StyleSheet.create({
     timerContainer: {
         width: "100%",
-        height: "auto",
-        alignItems: "center"
+        alignItems: "center",
+        flexDirection: "column",
+        height: "80%",
     },
     stateContainer: {
         width: "80%",
@@ -71,5 +82,5 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(255, 132, 4, 0.5)",
         width: 100,
         borderRadius: 50,
-    }
+    },
 })
