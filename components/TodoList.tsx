@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, FlatList } from 'react-native';
 import React, { useState } from 'react';
 import TodoItem from './TodoItem';
 import AddTodo from './addTodo';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 export default function TodoList({todos, setTodos}) {
 
@@ -22,7 +23,7 @@ export default function TodoList({todos, setTodos}) {
 
     return(
         <View style={styles.container}>
-            <Text style={styles.title}>Todo List</Text>
+            {/* <Text style={styles.title}>Todo List</Text>
             <View style={styles.listCont}>
                 <FlatList 
                     data={todos}
@@ -35,7 +36,7 @@ export default function TodoList({todos, setTodos}) {
 
             <View style={styles.newTodo}>
                 <AddTodo />
-            </View>
+            </View> */}
         </View>
     )
 }
