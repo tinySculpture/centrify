@@ -1,11 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function MainHeader({name, current, setContent}) {
+
+    const [curIcon, setCurIcon] = useState("account-circle-outline");
+
+    useEffect(() => {
+        if (current == "Timer") {
+            setCurIcon("account-circle-outline");
+        }else {
+            setCurIcon("timer-outline");
+        }
+    }, [current])
+    
+
     const editPressHandler = () => {
         if (current == "Timer") {
-            setContent("Todo");
+            setContent("Profile");
         }else {
             setContent("Timer");
         }
@@ -13,15 +25,12 @@ export default function MainHeader({name, current, setContent}) {
 
     return(
         <View style={styles.navbar}>
-            <TouchableOpacity>
-                <Icon name="account-circle-outline" size={30} color="#000" />
-            </TouchableOpacity>
-            <Text>{name}</Text>
             <TouchableOpacity
-                onPress={() => editPressHandler()}
+                onPress={ () => editPressHandler() }
             >
-                <Icon name="pencil-circle-outline" size={30} color="#000" />
+                <Icon name={curIcon} size={30} color="#000" />
             </TouchableOpacity>
+            {/* <Text style={styles.title}>{name}</Text> */}
         </View>
     )
 }
@@ -32,7 +41,12 @@ const styles = StyleSheet.create({
         height: 30,
         paddingHorizontal: 30,
         flexDirection: "row",
-        justifyContent: "space-between",
+        justifyContent: "flex-start",
         marginBottom: 10,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginLeft: 10
     }
 })

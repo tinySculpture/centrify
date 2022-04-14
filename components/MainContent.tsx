@@ -1,9 +1,10 @@
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import React, {useRef, useState} from 'react'
 import PomodoroTimer from './PomodoroTimer';
 import TodoList from './TodoList';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import BottomSheet, { BottomSheetFlatList, BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { GlobalStyles } from './styles/globalStyles';
 
 export default function MainContent({current}) {
     //TODO: Do backend for keeping todo list
@@ -19,26 +20,48 @@ export default function MainContent({current}) {
 
     // bottom sheet variables
     const sheetRef = useRef<BottomSheet>(null);
-    const snapPoints = ["40%", "60%"];
+    const snapPoints = ["20%", "60%"];
 
+    const currentTodo = () => {
+        if (todos.length === 0) {
+            return "No tasks left";
+        }else {
+            return todos[0].title;
+        }
+    }
+    console.log(currentTodo)
+
+    //Switch case for changing components after clicking profile button
     switch (current) {
         case 'Timer':
             return(
+                <TouchableWithoutFeedback
+                    onPress={() => {
+                        Keyboard.dismiss();
+                    }}
+                >
                 <GestureHandlerRootView style={styles.container}>
-                    <PomodoroTimer />
+                    <PomodoroTimer currentTodo={currentTodo()}/>
                     <BottomSheet
                         ref={sheetRef}
                         snapPoints={snapPoints}
                     >
                         <BottomSheetView style={styles.title}>
-                            <Text style={styles.titleText}>Todo List</Text>
+                            <Text style={[GlobalStyles.heading, {textAlign: "left"}]}>Todo List</Text>
                         </BottomSheetView>
 
                         <TodoList todos={todos} setTodos={setTodos} />
                     </BottomSheet>
                 </GestureHandlerRootView>
+            </TouchableWithoutFeedback>
             );
             break;
+        case 'Profile':
+            return(
+                <View>
+                    <Text>Profile view</Text>
+                </View> 
+            )
         default:
             return(
                 <View style={styles.container}>
@@ -57,6 +80,7 @@ const styles = StyleSheet.create({
 	},
     title: {
         paddingHorizontal: 30,
+        flexDirection: "row",
     },
     titleText: {
         fontSize: 20,

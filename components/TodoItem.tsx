@@ -29,6 +29,7 @@ var styles = StyleSheet.create({
     },
     todoText: {
         fontSize: 16,
+        width: "85%",
     },
     deleteIcon: {
         padding: 5,

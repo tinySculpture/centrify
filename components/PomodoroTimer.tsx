@@ -1,13 +1,12 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import React, { useState, useRef, useMemo, useCallback } from 'react';
 import Timer from './Timer';
-import BottomSheet, { BottomSheetTextInput, BottomSheetFlatList, BottomSheetView } from '@gorhom/bottom-sheet';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GlobalStyles } from './styles/globalStyles';
 
 // app colors: 
 // Main Orange #FF8404, rgb(255, 132, 4)
 
-export default function PomodoroTimer() {
+export default function PomodoroTimer({ currentTodo }) {
     // sets timer state and times
     var [timerState, setTimerState] = useState({
         studyTime: 30,
@@ -27,9 +26,10 @@ export default function PomodoroTimer() {
         isStudying = false
     }
 
-
     return(
         <View style={styles.timerContainer}>
+            <Text style={[GlobalStyles.heading, styles.heading]}>{currentTodo}</Text>
+            <Text style={[GlobalStyles.text]}>Current Task</Text>
             {/* State button container */}
             <View style={styles.stateContainer}>
                 {/* State buttons */}
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         width: "100%",
         alignItems: "center",
         flexDirection: "column",
-        height: "80%",
+        height: "85%",
     },
     stateContainer: {
         width: "80%",
@@ -83,4 +83,8 @@ const styles = StyleSheet.create({
         width: 100,
         borderRadius: 50,
     },
+    heading: {
+        borderBottomColor: "black",
+        borderBottomWidth: 1,
+    }
 })
