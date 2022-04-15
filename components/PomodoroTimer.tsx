@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import React, { useState, useRef, useMemo, useCallback } from 'react';
 import Timer from './Timer';
-import { GlobalStyles } from './styles/globalStyles';
+import { GlobalStyles } from './styles/GlobalStyles';
 
 // app colors: 
 // Main Orange #FF8404, rgb(255, 132, 4)

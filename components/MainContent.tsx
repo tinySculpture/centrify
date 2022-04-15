@@ -1,12 +1,40 @@
+// Imports
+// React Native:
 import { StyleSheet, View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import React, {useRef, useState} from 'react'
+
+// Custom Components:
 import PomodoroTimer from './PomodoroTimer';
 import TodoList from './TodoList';
+import { GlobalStyles, Colors } from './styles/GlobalStyles';
+
+// External Imports:
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { GlobalStyles } from './styles/globalStyles';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+
+// Bottom Navigation:
+import Home from './profile/Home';
+import Search from './profile/Search';
+import Message from './profile/Message';
+import Profile from './profile/Profile';
+
+const Tab = createBottomTabNavigator();
+
+const MyTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: 'rgb(255, 255, 255)',
+      primary: Colors.MAIN_ORANGE
+    },
+  };
 
 export default function MainContent({current}) {
+
     //TODO: Do backend for keeping todo list
     const [todos, setTodos] = useState([
         {title: 'Lorem Ipsum dolor sit amet 1', key: 1},
@@ -29,7 +57,6 @@ export default function MainContent({current}) {
             return todos[0].title;
         }
     }
-    console.log(currentTodo)
 
     //Switch case for changing components after clicking profile button
     switch (current) {
@@ -55,12 +82,86 @@ export default function MainContent({current}) {
                 </GestureHandlerRootView>
             </TouchableWithoutFeedback>
             );
-            break;
         case 'Profile':
             return(
-                <View>
-                    <Text>Profile view</Text>
-                </View> 
+                <NavigationContainer
+                    theme={MyTheme}
+                >
+                    <Tab.Navigator
+                        initialRouteName='Home'
+                        backBehavior='order'
+                        screenOptions={{
+                            tabBarShowLabel: false,
+                            headerShown: false,
+                            tabBarStyle: {
+                                bottom: 10,
+                                paddingTop: 10,
+                            },
+                        }}
+                        
+                    >
+                        <Tab.Screen
+                            name='Home'
+                            component={Home}
+                            options={{
+                                tabBarIcon: ({focused}) => {
+                                    var focusedColor = focused ? Colors.MAIN_ORANGE : "#aaa";
+                                    return(
+                                        <View style={styles.navIcon}>
+                                            <Icon name="home" size={24} color={focusedColor} />
+                                            <Text style={[styles.navText, {color: focusedColor}]}>Home</Text>
+                                        </View>
+                                    )
+                                },
+                            }}
+                        />
+                        <Tab.Screen
+                            name='Search'
+                            component={Search}
+                            options={{
+                                tabBarIcon: ({focused}) => {
+                                    var focusedColor = focused ? Colors.MAIN_ORANGE : "#aaa";
+                                    return(
+                                        <View style={styles.navIcon}>
+                                            <Icon name="magnify" size={24} color={focusedColor} />
+                                            <Text style={[styles.navText, {color: focusedColor}]}>Search</Text>
+                                        </View>
+                                    )
+                                },
+                            }}
+                        />
+                        <Tab.Screen
+                            name='Message'
+                            component={Message}
+                            options={{
+                                tabBarIcon: ({focused}) => {
+                                    var focusedColor = focused ? Colors.MAIN_ORANGE : "#aaa";
+                                    return(
+                                        <View style={styles.navIcon}>
+                                            <Icon name="message-text" size={24} color={focusedColor} />
+                                            <Text style={[styles.navText, {color: focusedColor}]}>Message</Text>
+                                        </View>
+                                    )
+                                },
+                            }}
+                        />
+                        <Tab.Screen
+                            name='Profile'
+                            component={Profile}
+                            options={{
+                                tabBarIcon: ({focused}) => {
+                                    var focusedColor = focused ? Colors.MAIN_ORANGE : "#aaa";
+                                    return(
+                                        <View style={styles.navIcon}>
+                                            <MaterialIcon name="person" size={24} color={focusedColor} />
+                                            <Text style={[styles.navText, {color: focusedColor}]}>Profile</Text>
+                                        </View>
+                                    )
+                                },
+                            }}
+                        />
+                    </Tab.Navigator>
+                </NavigationContainer>
             )
         default:
             return(
@@ -68,7 +169,6 @@ export default function MainContent({current}) {
                     <Text>Something went wrong.</Text>
                 </View>
             )
-        
     }
 }
 
@@ -86,5 +186,18 @@ const styles = StyleSheet.create({
         fontSize: 20,
         width: "100%",
         textAlign: "center",
+    },
+    navigator: {
+        backgroundColor: "#333",
+        height: 100,
+    },
+    navIcon: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    navText: {
+        color: Colors.MAIN_ORANGE,
+        fontSize: 12,
+
     }
 });
