@@ -20,25 +20,9 @@ import { NavigationContainer, StackActions } from '@react-navigation/native';
 import SignupScreen from './components/login/SignupScreen';
 import StrandSignupScreen from './components/login/StrandSignupScreen';
 
-const MainScreen = ({ navigation }) => {
-	var [curContent, setCurContent] = useState("Timer");
-
-	navigation.reset({
-		index: 0,
-		routes: [{name: "Main"}]
-	})
-	
-	return (
-		<View style={[styles.container, GlobalStyles.mainContainer]}>
-			<MainHeader name="Centrify" current={curContent} setContent={setCurContent} />
-			<View style={styles.mainCont}>
-				<MainContent current={curContent} />
-			</View>
-		</View>
-	);
-}
-
 export default function App() {
+
+	var [curContent, setCurContent] = useState("Timer");
 
 	const [fontsLoaded] = useFonts({
 		Roboto_Light: require('./assets/fonts/Roboto-Light.ttf'),
@@ -49,6 +33,20 @@ export default function App() {
 		PlayfairDisplay_Bold: require('./assets/fonts/PlayfairDisplay-Bold.otf'),
 	})
 
+	const [name, setName] = useState();
+    const [email, setEmail] = useState();
+    const [password, setPassword] = useState();
+	const [uid, setUid] = useState();
+
+	const childProps = {
+		name,
+		setName,
+		email,
+		setEmail,
+		password,
+		setPassword
+	}
+
 	if (!fontsLoaded) {
 		return <AppLoading />;
 	}
@@ -56,17 +54,26 @@ export default function App() {
 	const appStack = createStackNavigator();
 
 	return(
-		<NavigationContainer>
+		<NavigationContainer independent={true}>
 			<appStack.Navigator
 				initialRouteName='Login'
 				screenOptions={{
 					headerShown: false,
 				}}
+				detachInactiveScreens={true}
 			>
-				<appStack.Screen name="Login" component={LoginScreen} />
-				<appStack.Screen name="Signup" component={SignupScreen} />
-				<appStack.Screen name="Signup_2" component={StrandSignupScreen} />
-				<appStack.Screen name="Main" component={MainScreen} />
+				<appStack.Screen name="Login">
+					{(props) => <LoginScreen {...props} />}
+				</appStack.Screen>
+				<appStack.Screen name="Signup">
+					{(props) => <SignupScreen {...props} {...childProps} uid={uid} setUid={setUid} />}
+				</appStack.Screen>
+				<appStack.Screen name="Signup_2">
+					{(props) => <StrandSignupScreen {...props} {...childProps} uid={uid} setUid={setUid} />}
+				</appStack.Screen>
+				<appStack.Screen name="Main">
+				{(props) => <MainContent {...props} current={curContent} setCurrent={setCurContent} />}
+				</appStack.Screen>
 			</appStack.Navigator>
 		</NavigationContainer>
 	)

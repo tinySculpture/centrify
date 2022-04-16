@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default function MainHeader({name, current, setContent}) {
+export default function MainHeader({ name, navigation, current, setContent}) {
 
     const [curIcon, setCurIcon] = useState("account-circle-outline");
 
@@ -18,8 +18,10 @@ export default function MainHeader({name, current, setContent}) {
     const editPressHandler = () => {
         if (current == "Timer") {
             setContent("Profile");
+            navigation.navigate('Social');
         }else {
             setContent("Timer");
+            navigation.navigate('Timer');
         }
     }
 

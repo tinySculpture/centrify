@@ -1,19 +1,37 @@
 // Imports
 // React Native:
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, Alert } from 'react-native';
 import React, { useState } from 'react';
 import FormInput from './FormInput';
 import { Colors, DEVICE_WIDTH, GlobalStyles } from '../styles/GlobalStyles';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase/firebase-config';
 
-export default function SignupScreen({ navigation }) {
+export default function SignupScreen({ navigation, name, setName, email, setEmail, password, setPassword, uid, setUid }) {
 
-    const [name, setName] = useState();
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
-
-    const loginHandler = () => {
-        // TODO: Check form validity
-        console.log(email, password);
+    const signupHandler = () => {
+        if ((email != undefined && email !== "" ) && (password != undefined && password !== "")) {
+            console.log(email, password);
+            if (name != undefined && name !== "") {
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then((userCred) => {
+                        setUid(userCred.user.uid);
+                        navigation.navigate('Signup_2')
+                    })
+                    .catch((error) => {
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                    });
+            }else {
+                alert("Enter your name")
+            }
+        }else if ((email === undefined || email === "") && (password != undefined && password !== "")) {
+            alert("Enter Email");
+        }else if ((email != undefined && email !== "") && (password == undefined || password === "")) {
+            alert("Enter Password");
+        }else if ((email == undefined || email === "") && (password == undefined || password === "")) {
+            alert("Enter Email and Password");
+        }
     }
     
     return(
@@ -72,7 +90,7 @@ export default function SignupScreen({ navigation }) {
                 }}>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={() => navigation.navigate('Signup_2') }
+                        onPress={() => signupHandler() }
                     >
                         <Text style={{
                             color: "#fff",
@@ -81,7 +99,7 @@ export default function SignupScreen({ navigation }) {
                             fontFamily: "Roboto_Bold",
                             fontSize: 16,
                         }}>
-                            SIGNUP
+                            NEXT
                         </Text>
                     </TouchableOpacity>
                 </View>

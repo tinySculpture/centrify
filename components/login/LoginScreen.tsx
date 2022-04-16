@@ -4,6 +4,8 @@ import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import FormInput from './FormInput';
 import { Colors, DEVICE_WIDTH, GlobalStyles } from '../styles/GlobalStyles';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase/firebase-config';
 
 export default function LoginScreen({ navigation }) {
 
@@ -11,8 +13,20 @@ export default function LoginScreen({ navigation }) {
     const [password, setPassword] = useState();
 
     const loginHandler = () => {
-        // TODO: Check form validity
-        // console.log(email, password);
+        console.log(email, password);
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCred) => {
+                const user = userCred.user;
+                console.log(user.uid)
+                navigation.reset({
+                    index: 0,
+                    routes: [{name: "Main"}]
+                })
+                // navigation.navigate('Main');
+            })
+            .catch((e) => {
+                console.error(e)
+            })
     }
 
     return(
@@ -99,7 +113,7 @@ export default function LoginScreen({ navigation }) {
                 }}>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={() => navigation.navigate('Main')}
+                        onPress={() => loginHandler()}
                     >
                         <Text style={{
                             color: "#fff",

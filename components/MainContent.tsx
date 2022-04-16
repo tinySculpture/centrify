@@ -21,19 +21,13 @@ import Home from './profile/Home';
 import Search from './profile/Search';
 import Message from './profile/Message';
 import Profile from './profile/Profile';
+import { createStackNavigator } from '@react-navigation/stack';
+import MainHeader from './MainHeader';
+import BottomNav from './BottomNav';
 
 const Tab = createBottomTabNavigator();
 
-const MyTheme = {
-    ...DefaultTheme,
-    colors: {
-      ...DefaultTheme.colors,
-      background: 'rgb(255, 255, 255)',
-      primary: Colors.MAIN_ORANGE
-    },
-  };
-
-export default function MainContent({current}) {
+export default function MainContent({ current, setCurrent }) {
 
     //TODO: Do backend for keeping todo list
     const [todos, setTodos] = useState([
@@ -58,118 +52,64 @@ export default function MainContent({current}) {
         }
     }
 
-    //Switch case for changing components after clicking profile button
-    switch (current) {
-        case 'Timer':
-            return(
-                <TouchableWithoutFeedback
-                    onPress={() => {
-                        Keyboard.dismiss();
-                    }}
-                >
-                <GestureHandlerRootView style={styles.container}>
-                    <PomodoroTimer currentTodo={currentTodo()}/>
-                    <BottomSheet
-                        ref={sheetRef}
-                        snapPoints={snapPoints}
-                    >
-                        <BottomSheetView style={styles.title}>
-                            <Text style={[GlobalStyles.heading, {textAlign: "left"}]}>Todo List</Text>
-                        </BottomSheetView>
-
-                        <TodoList todos={todos} setTodos={setTodos} />
-                    </BottomSheet>
-                </GestureHandlerRootView>
-            </TouchableWithoutFeedback>
-            );
-        case 'Profile':
-            return(
-                <NavigationContainer
-                    theme={MyTheme}
-                >
-                    <Tab.Navigator
-                        initialRouteName='Home'
-                        backBehavior='order'
-                        screenOptions={{
-                            tabBarShowLabel: false,
-                            headerShown: false,
-                            tabBarStyle: {
-                                bottom: 10,
-                                paddingTop: 10,
-                            },
+    const Timer = ({ navigation }) => {
+        return(
+            <View style={[styles.topContainer, GlobalStyles.mainContainer]}>
+                <MainHeader name="Centrify" current={current} setContent={setCurrent} navigation={navigation} />
+                <View style={styles.mainCont}>
+                    <TouchableWithoutFeedback
+                        onPress={() => {
+                            Keyboard.dismiss();
                         }}
-                        
                     >
-                        <Tab.Screen
-                            name='Home'
-                            component={Home}
-                            options={{
-                                tabBarIcon: ({focused}) => {
-                                    var focusedColor = focused ? Colors.MAIN_ORANGE : "#aaa";
-                                    return(
-                                        <View style={styles.navIcon}>
-                                            <Icon name="home" size={24} color={focusedColor} />
-                                            <Text style={[styles.navText, {color: focusedColor}]}>Home</Text>
-                                        </View>
-                                    )
-                                },
-                            }}
-                        />
-                        <Tab.Screen
-                            name='Search'
-                            component={Search}
-                            options={{
-                                tabBarIcon: ({focused}) => {
-                                    var focusedColor = focused ? Colors.MAIN_ORANGE : "#aaa";
-                                    return(
-                                        <View style={styles.navIcon}>
-                                            <Icon name="magnify" size={24} color={focusedColor} />
-                                            <Text style={[styles.navText, {color: focusedColor}]}>Search</Text>
-                                        </View>
-                                    )
-                                },
-                            }}
-                        />
-                        <Tab.Screen
-                            name='Message'
-                            component={Message}
-                            options={{
-                                tabBarIcon: ({focused}) => {
-                                    var focusedColor = focused ? Colors.MAIN_ORANGE : "#aaa";
-                                    return(
-                                        <View style={styles.navIcon}>
-                                            <Icon name="message-text" size={24} color={focusedColor} />
-                                            <Text style={[styles.navText, {color: focusedColor}]}>Message</Text>
-                                        </View>
-                                    )
-                                },
-                            }}
-                        />
-                        <Tab.Screen
-                            name='Profile'
-                            component={Profile}
-                            options={{
-                                tabBarIcon: ({focused}) => {
-                                    var focusedColor = focused ? Colors.MAIN_ORANGE : "#aaa";
-                                    return(
-                                        <View style={styles.navIcon}>
-                                            <MaterialIcon name="person" size={24} color={focusedColor} />
-                                            <Text style={[styles.navText, {color: focusedColor}]}>Profile</Text>
-                                        </View>
-                                    )
-                                },
-                            }}
-                        />
-                    </Tab.Navigator>
-                </NavigationContainer>
-            )
-        default:
-            return(
-                <View style={styles.container}>
-                    <Text>Something went wrong.</Text>
+                        <GestureHandlerRootView style={styles.container}>
+                            <PomodoroTimer currentTodo={currentTodo()}/>
+                            <BottomSheet
+                                ref={sheetRef}
+                                snapPoints={snapPoints}
+                            >
+                                <BottomSheetView style={styles.title}>
+                                    <Text style={[GlobalStyles.heading, {textAlign: "left"}]}>Todo List</Text>
+                                </BottomSheetView>
+
+                                <TodoList todos={todos} setTodos={setTodos} />
+                            </BottomSheet>
+                        </GestureHandlerRootView>
+                    </TouchableWithoutFeedback>
                 </View>
-            )
+            </View>
+        );
     }
+
+    const Social = ({ navigation }) => {
+        return(
+            <View style={[styles.topContainer, GlobalStyles.mainContainer]}>
+                <MainHeader name="Centrify" current={current} setContent={setCurrent} navigation={navigation} />
+                <BottomNav />
+            </View>
+        )
+    }
+
+    const socialStack = createStackNavigator();
+
+    return(
+        <NavigationContainer independent={true}>
+            <socialStack.Navigator
+                initialRouteName='Login'
+                screenOptions={{
+                    headerShown: false,
+                }}
+                detachInactiveScreens={true}
+            >
+                <socialStack.Screen name="Timer">
+                    {(props) => <Timer {...props} /> }
+                </socialStack.Screen>
+                <socialStack.Screen name="Social">
+                    {(props) => <Social {...props} /> }
+                </socialStack.Screen>
+            </socialStack.Navigator>
+        </NavigationContainer>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -177,6 +117,18 @@ const styles = StyleSheet.create({
 		width: "100%",
         flex: 1,
         justifyContent: "space-evenly"
+	},
+    topContainer: {
+		backgroundColor: '#fff',
+		width: "100%",
+		paddingTop: 30,
+		flexDirection: "column",
+	},
+    mainCont: {
+		alignItems: "stretch",
+		alignSelf: "stretch",
+		justifyContent: "space-evenly",
+		flexGrow: 1,
 	},
     title: {
         paddingHorizontal: 30,
@@ -187,17 +139,4 @@ const styles = StyleSheet.create({
         width: "100%",
         textAlign: "center",
     },
-    navigator: {
-        backgroundColor: "#333",
-        height: 100,
-    },
-    navIcon: {
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    navText: {
-        color: Colors.MAIN_ORANGE,
-        fontSize: 12,
-
-    }
 });

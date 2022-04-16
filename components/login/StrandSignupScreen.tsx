@@ -1,15 +1,41 @@
 // Imports
 // React Native:
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, LogBox } from 'react-native';
 import React, { useState } from 'react';
 import FormInput from './FormInput';
 import { Colors, DEVICE_WIDTH, GlobalStyles } from '../styles/GlobalStyles';
 import { RadioButton } from 'react-native-paper';
+import { collection, addDoc, getFirestore } from 'firebase/firestore'; 
+import { app } from '../firebase/firebase-config';
+import { initializeApp } from 'firebase/app';
 
-export default function StrandSignupScreen() {
+
+
+export default function StrandSignupScreen({ navigation, name, setName, email, setEmail, password, setPassword, uid, setUid }) {
+
+    LogBox.ignoreLogs(['Setting a timer for a long period of time']);
+
+    const db = getFirestore(app)
 
     const [section, setSection] = useState();
     const [checkedStrand, setCheckedStrand] = useState<String>();
+
+    function getDocument() {
+        try {
+            const docRef = addDoc(collection(db, "users"), {
+                name: name,
+                email: email,
+                section: section,
+                strand: checkedStrand,
+                uid: uid,
+            });
+            alert("Successfully Signed up")
+            navigation.navigate('Login')
+        } catch (e) {
+            console.log(db.type)
+            console.error("Error adding document: ", e);
+        }
+    }
     
     return(
         <View style={[GlobalStyles.mainContainer, styles.mainContainer]}>
@@ -43,30 +69,30 @@ export default function StrandSignupScreen() {
                     <Text style={{fontFamily: "Roboto", fontSize: 20}}>Select Strand</Text>
                     <View style={styles.radioButton}>
                         <RadioButton
-                            value="s"
-                            status={checkedStrand == "s" ? "checked" : "unchecked"}
-                            onPress={() => setCheckedStrand("s")}
+                            value="STEM"
+                            status={checkedStrand == "STEM" ? "checked" : "unchecked"}
+                            onPress={() => setCheckedStrand("STEM")}
                             color={Colors.MAIN_ORANGE}
                         />
-                        <Text onPress={() => setCheckedStrand("s")}>STEM</Text>
+                        <Text onPress={() => setCheckedStrand("STEM")}>STEM</Text>
                     </View>
                     <View style={styles.radioButton}>
                         <RadioButton
-                            value="h"
-                            status={checkedStrand == "h" ? "checked" : "unchecked"}
-                            onPress={() => setCheckedStrand("h")}
+                            value="HUMSS"
+                            status={checkedStrand == "HUMSS" ? "checked" : "unchecked"}
+                            onPress={() => setCheckedStrand("HUMSS")}
                             color={Colors.MAIN_ORANGE}
                         />
-                        <Text onPress={() => setCheckedStrand("h")}>HUMSS</Text>
+                        <Text onPress={() => setCheckedStrand("HUMSS")}>HUMSS</Text>
                     </View>
                     <View style={styles.radioButton}>
                         <RadioButton
-                            value="a"
-                            status={checkedStrand == "a" ? "checked" : "unchecked"}
-                            onPress={() => setCheckedStrand("a")}
+                            value="ABM"
+                            status={checkedStrand == "ABM" ? "checked" : "unchecked"}
+                            onPress={() => setCheckedStrand("ABM")}
                             color={Colors.MAIN_ORANGE}
                         />
-                        <Text onPress={() => setCheckedStrand("a")}>ABM</Text>
+                        <Text onPress={() => setCheckedStrand("ABM")}>ABM</Text>
                     </View>
                 </View>
                 
@@ -75,7 +101,6 @@ export default function StrandSignupScreen() {
                     icon=""
                     placeholderText="Section"
                     onChangeText={(input) => setSection(input)}
-                    secureTextEntry={true}
                 />
                 {/* Form End */}
 
@@ -86,7 +111,7 @@ export default function StrandSignupScreen() {
                 }}>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={() => console.log("hello")}
+                        onPress={() => getDocument()}
                     >
                         <Text style={{
                             color: "#fff",
@@ -156,3 +181,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     }
 })
+
+function firebaseConfig(firebaseConfig: any) {
+    throw new Error('Function not implemented.');
+}
