@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 // React:
-import { StyleSheet, View, Dimensions, Text } from 'react-native';
+import { StyleSheet, View, Dimensions, Text, LogBox } from 'react-native';
 import React, { useState } from 'react'
 
 // Custom Components
@@ -20,9 +20,10 @@ import { NavigationContainer, StackActions } from '@react-navigation/native';
 import SignupScreen from './components/login/SignupScreen';
 import StrandSignupScreen from './components/login/StrandSignupScreen';
 
-export default function App() {
+LogBox.ignoreLogs(['Setting a timer for a long period of time']);
+LogBox.ignoreLogs(['AsyncStorage has been extracted from react-native core']);
 
-	var [curContent, setCurContent] = useState("Timer");
+export default function App() {
 
 	const [fontsLoaded] = useFonts({
 		Roboto_Light: require('./assets/fonts/Roboto-Light.ttf'),
@@ -60,7 +61,6 @@ export default function App() {
 				screenOptions={{
 					headerShown: false,
 				}}
-				detachInactiveScreens={true}
 			>
 				<appStack.Screen name="Login">
 					{(props) => <LoginScreen {...props} />}
@@ -72,24 +72,9 @@ export default function App() {
 					{(props) => <StrandSignupScreen {...props} {...childProps} uid={uid} setUid={setUid} />}
 				</appStack.Screen>
 				<appStack.Screen name="Main">
-				{(props) => <MainContent {...props} current={curContent} setCurrent={setCurContent} />}
+				{(props) => <MainContent {...props} />}
 				</appStack.Screen>
 			</appStack.Navigator>
 		</NavigationContainer>
 	)
 }
-
-const styles = StyleSheet.create({
-	container: {
-		backgroundColor: '#fff',
-		width: "100%",
-		paddingTop: 30,
-		flexDirection: "column",
-	},
-	mainCont: {
-		alignItems: "stretch",
-		alignSelf: "stretch",
-		justifyContent: "space-evenly",
-		flexGrow: 1,
-	},
-});

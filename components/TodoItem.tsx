@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 

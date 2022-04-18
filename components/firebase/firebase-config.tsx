@@ -1,10 +1,12 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getDatabase } from "firebase/database";
 
 export const firebaseConfig = {
 	apiKey: "AIzaSyD3OpBFik_ahTgl_ySBtJuXV2FlrQPQsV8",
 	authDomain: "centrify-c1219.firebaseapp.com",
+	databaseURL: "https://centrify-c1219-default-rtdb.asia-southeast1.firebasedatabase.app/",
 	projectId: "centrify-c1219",
 	storageBucket: "centrify-c1219.appspot.com",
 	messagingSenderId: "942555458184",
@@ -15,4 +17,5 @@ export const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = getDatabase(app);
+export const firedb = getFirestore(app);

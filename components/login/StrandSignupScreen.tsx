@@ -5,8 +5,8 @@ import React, { useState } from 'react';
 import FormInput from './FormInput';
 import { Colors, DEVICE_WIDTH, GlobalStyles } from '../styles/GlobalStyles';
 import { RadioButton } from 'react-native-paper';
-import { collection, addDoc, getFirestore } from 'firebase/firestore'; 
-import { app } from '../firebase/firebase-config';
+import { collection, addDoc, getFirestore, setDoc, doc } from 'firebase/firestore'; 
+import { app, firedb } from '../firebase/firebase-config';
 import { initializeApp } from 'firebase/app';
 
 
@@ -15,25 +15,26 @@ export default function StrandSignupScreen({ navigation, name, setName, email, s
 
     LogBox.ignoreLogs(['Setting a timer for a long period of time']);
 
-    const db = getFirestore(app)
-
     const [section, setSection] = useState();
     const [checkedStrand, setCheckedStrand] = useState<String>();
 
     function getDocument() {
+        const usersRef = doc(firedb, "users", uid);
+
         try {
-            const docRef = addDoc(collection(db, "users"), {
+            setDoc(usersRef, {
                 name: name,
                 email: email,
                 section: section,
                 strand: checkedStrand,
+                profileImage: "",
                 uid: uid,
             });
             alert("Successfully Signed up")
             navigation.navigate('Login')
         } catch (e) {
-            console.log(db.type)
-            console.error("Error adding document: ", e);
+            console.log(firedb.type)
+            console.error("Error signing up: ", e);
         }
     }
     

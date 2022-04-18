@@ -1,34 +1,48 @@
 import { StyleSheet, View } from 'react-native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, createRef, useEffect } from 'react';
 import TodoItem from './TodoItem';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { BottomSheetFlatList, BottomSheetTextInput, TouchableHighlight } from '@gorhom/bottom-sheet';
+import uuid from 'react-native-uuid';
+import { auth, db } from './firebase/firebase-config';
+import { child, get, ref, remove, set } from 'firebase/database';
 
 export default function TodoList({ todos, setTodos }) {
 
-    const [text, setText] = useState<String>(null);
+    const [text, setText] = useState("");
+
+    const currentUID = auth.currentUser.uid;
 
     const removeTodoHandler = (key) => {
+        remove(ref(db, 'todos/' + currentUID + '/' + key))
+        ref(db, 'todos/' + currentUID)
         setTodos((prevTodos) => {
             return prevTodos.filter(todo => todo.key != key);
         });
     }
 
     const submitHandler = (text) => {
-        setTodos((prevTodos) => {
-            return [
-                ...prevTodos,
-                { title: text, key: Math.random().toString() },
-            ]
-        })
+        if (text == "" || text == undefined) {
+            alert("Enter an item");
+        }else if(text.length >= 50) {
+            alert("Item too long");
+        }else {
+            const todoKey = uuid.v4();
+            set(ref(db, 'todos/' + currentUID + '/' + todoKey), {
+                title: text,
+                key: todoKey,
+                timeStamp: Date.now()
+            });
+        }
+        setText("")
     }
 
     const textChangeHandler = (val) => {
         setText(val);
     }
 
-    const renderItem= useCallback(({ item }) => (
-        <TodoItem item={item} todoHandler={removeTodoHandler}/>
+    const renderItem = useCallback(({ item }) => (
+        <TodoItem item={item} todoHandler={removeTodoHandler} />
     ), []);
 
     return(
@@ -37,9 +51,13 @@ export default function TodoList({ todos, setTodos }) {
                 <BottomSheetTextInput style={styles.input}
                     onChangeText={ (e) => textChangeHandler(e) }
                     placeholder="Add new item"
+                    clearTextOnFocus={true}
+                    value={text}
                     onSubmitEditing={ () => console.log(text) }
+                    clearButtonMode="always"
                 />
-                <TouchableHighlight style={styles.icon}
+                <TouchableHighlight
+                    style={styles.icon}
                     onPress={ () => submitHandler(text) }
                     underlayColor={"rgba(0, 0, 0, 0)"}
                 >

@@ -4,8 +4,8 @@ import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import FormInput from './FormInput';
 import { Colors, DEVICE_WIDTH, GlobalStyles } from '../styles/GlobalStyles';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/firebase-config';
+import { browserSessionPersistence, setPersistence, signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function LoginScreen({ navigation }) {
 

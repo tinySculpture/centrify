@@ -5,7 +5,11 @@ import { GlobalStyles } from "../styles/GlobalStyles";
 export default function Search() {
     return(
         <View>
-            <Text>Search Page</Text>
+            <Text>Search Page Test</Text>
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    
+})

@@ -5,26 +5,33 @@ import Home from './profile/Home';
 import Search from './profile/Search';
 import Message from './profile/Message';
 import Profile from './profile/Profile';
+
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
-import { Colors } from './styles/GlobalStyles';
+import { Colors, DEVICE_HEIGHT, GlobalStyles } from './styles/GlobalStyles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-const Tab = createBottomTabNavigator();
+export default function BottomNav({ title, body, image }) {
 
-const MyTheme = {
-    ...DefaultTheme,
-    colors: {
-      ...DefaultTheme.colors,
-      background: 'rgb(255, 255, 255)',
-      primary: Colors.MAIN_ORANGE
-    },
-};
+    const [currentTab, setCurrentTab] = useState()
 
-export default function BottomNav() {
+    const MyTheme = {
+        ...DefaultTheme,
+        colors: {
+          ...DefaultTheme.colors,
+          background: 'rgb(255, 255, 255)',
+          primary: Colors.MAIN_ORANGE
+        },
+    };
+    const Tab = createBottomTabNavigator();
+    const HomeView = () => {
+        return(<Home title={title} body={body} image={image} />)
+    }
+
     return(
-        <View style={styles.mainCont}>
+        <SafeAreaProvider style={[styles.mainContainer]}>
             <NavigationContainer
                 theme={MyTheme}
                 independent={true}
@@ -35,14 +42,7 @@ export default function BottomNav() {
                     screenOptions={{
                         tabBarShowLabel: false,
                         headerShown: false,
-                        tabBarStyle: {
-                            // bottom: 48,
-                            // paddingTop: 10,
-                            // paddingBottom: 10,
-                            // height: 60,
-                        },
                     }}
-                    
                 >
                     <Tab.Screen
                         name='Home'
@@ -53,7 +53,7 @@ export default function BottomNav() {
                                 return(
                                     <View style={styles.navIcon}>
                                         <Icon name="home" size={24} color={focusedColor} />
-                                        <Text style={[styles.navText, {color: focusedColor}]}>Home</Text>
+                                        {/* <Text style={[styles.navText, {color: focusedColor}]}>Home</Text> */}
                                     </View>
                                 )
                             },
@@ -68,7 +68,7 @@ export default function BottomNav() {
                                 return(
                                     <View style={styles.navIcon}>
                                         <Icon name="magnify" size={24} color={focusedColor} />
-                                        <Text style={[styles.navText, {color: focusedColor}]}>Search</Text>
+                                        {/* <Text style={[styles.navText, {color: focusedColor}]}>Search</Text> */}
                                     </View>
                                 )
                             },
@@ -83,7 +83,7 @@ export default function BottomNav() {
                                 return(
                                     <View style={styles.navIcon}>
                                         <Icon name="message-text" size={24} color={focusedColor} />
-                                        <Text style={[styles.navText, {color: focusedColor}]}>Message</Text>
+                                        {/* <Text style={[styles.navText, {color: focusedColor}]}>Message</Text> */}
                                     </View>
                                 )
                             },
@@ -98,7 +98,7 @@ export default function BottomNav() {
                                 return(
                                     <View style={styles.navIcon}>
                                         <MaterialIcon name="person" size={24} color={focusedColor} />
-                                        <Text style={[styles.navText, {color: focusedColor}]}>Profile</Text>
+                                        {/* <Text style={[styles.navText, {color: focusedColor}]}>Profile</Text> */}
                                     </View>
                                 )
                             },
@@ -106,15 +106,17 @@ export default function BottomNav() {
                     />
                 </Tab.Navigator>
             </NavigationContainer>
-        </View>
+        </SafeAreaProvider>
     )
 }
 
 const styles = StyleSheet.create({
+    mainContainer: {
+        height: DEVICE_HEIGHT,
+    },
     mainCont: {
 		alignItems: "stretch",
 		alignSelf: "stretch",
-		justifyContent: "space-evenly",
 		flexGrow: 1,
 	},
     navIcon: {
@@ -124,9 +126,5 @@ const styles = StyleSheet.create({
     navText: {
         color: Colors.MAIN_ORANGE,
         fontSize: 12,
-    },
-    navigator: {
-        backgroundColor: "#333",
-        height: 100,
     },
 })

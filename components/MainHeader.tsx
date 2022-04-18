@@ -1,40 +1,90 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, BackHandler } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { NavigationContext } from 'react-navigation';
+import * as RootNavigation from './RootNavigation';
+import { Colors } from './styles/GlobalStyles';
 
-export default function MainHeader({ name, navigation, current, setContent}) {
-
-    const [curIcon, setCurIcon] = useState("account-circle-outline");
-
-    useEffect(() => {
-        if (current == "Timer") {
-            setCurIcon("account-circle-outline");
-        }else {
-            setCurIcon("timer-outline");
-        }
-    }, [current])
-    
+export default function MainHeader({ name, current, setCurrent, createPost, curIcon, setCurIcon }) {
 
     const editPressHandler = () => {
         if (current == "Timer") {
-            setContent("Profile");
-            navigation.navigate('Social');
+            setCurIcon('timer-outline');
+            RootNavigation.navigate('Social');
+            setCurrent("Social");
         }else {
-            setContent("Timer");
-            navigation.navigate('Timer');
+            setCurIcon("account-circle-outline");
+            RootNavigation.navigate('Timer');
+            setCurrent("Timer");
         }
     }
 
-    return(
-        <View style={styles.navbar}>
-            <TouchableOpacity
-                onPress={ () => editPressHandler() }
-            >
-                <Icon name={curIcon} size={30} color="#000" />
-            </TouchableOpacity>
-            {/* <Text style={styles.title}>{name}</Text> */}
-        </View>
-    )
+    const addPostHandler = () => {
+        RootNavigation.navigate("NewPost")
+        setCurrent("NewPost");
+    }
+
+    const goBack = () => {
+        RootNavigation.navigate("Social");
+        setCurrent("Social");
+    }
+
+    if (current == "Timer") {
+        return(
+            <View style={styles.navbar}>
+                <TouchableOpacity
+                    onPress={ () => editPressHandler() }
+                >
+                    <Icon name={curIcon} size={30} color="#000" />
+                </TouchableOpacity>
+            </View>
+        )
+    }else if (current == "Social"){
+        BackHandler.addEventListener("hardwareBackPress", function () {
+            setCurIcon("account-circle-outline");
+            RootNavigation.navigate("Timer");
+            setCurrent("Timer");
+            return true;
+        });
+
+        return(
+            <View style={styles.navbar}>
+                <TouchableOpacity
+                    onPress={ () => editPressHandler() }
+                >
+                    <Icon name={curIcon} size={30} color="#000" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={ () => addPostHandler() }
+                >
+                    <Icon name="plus" size={30} color="#000" />
+                </TouchableOpacity>
+            </View>
+        )
+    }else {
+        BackHandler.addEventListener("hardwareBackPress", function () {
+            RootNavigation.navigate("Social");
+            setCurrent("Social");
+            return true;
+        });
+
+        return (
+            <View style={styles.navbar}>
+                <TouchableOpacity
+                    onPress={ () => goBack() }
+                >
+                    <MaterialIcon name="arrow-back-ios" size={20} color="#000" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.post}
+                    onPress={ () => createPost() }
+                >
+                    <Text style={{color: "#fff", fontFamily: "Roboto_Bold"}}>POST</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
 }
 
 const styles = StyleSheet.create({
@@ -43,12 +93,19 @@ const styles = StyleSheet.create({
         height: 30,
         paddingHorizontal: 30,
         flexDirection: "row",
-        justifyContent: "flex-start",
+        justifyContent: "space-between",
+        alignItems: "center",
         marginBottom: 10,
     },
     title: {
         fontSize: 24,
         fontWeight: "bold",
         marginLeft: 10
+    },
+    post: {
+        padding: 5,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+        backgroundColor: Colors.MAIN_ORANGE,
     }
 })
