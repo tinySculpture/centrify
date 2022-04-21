@@ -1,56 +1,83 @@
 import React from "react";
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Image, Alert } from 'react-native';
 import { GlobalStyles } from "../../styles/GlobalStyles";
 import PostControl from "./PostControl";
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { auth, firedb } from "../../firebase/firebase-config";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { deleteDoc, doc } from "firebase/firestore";
 
-const Image = ({ image }) => {
-    if (image == "" || image == undefined || image == null) {
-        return null;
-    }else {
-        return(
-            <View style={styles.image}>
-                {/* Insert Image */}
-            </View>
-        )
+export default function Post({ name, strand, section, profileImage, title, body, image, likes, comments, userID, postKey, timeStamp, dislikes }) {
+    
+    const deletePost = () => {
+        Alert.alert("Delete Post?", "Are you sure you want to delete?", [
+            {
+                text: "Cancel",
+                onPress: () => console.log("Cancelled delete"),
+                style: "cancel",
+            },
+            {
+                text: "Delete",
+                onPress: () => confirmDelete(),
+                style: "destructive",
+            }
+        ])
     }
-}
 
-export default function Post({ name, strand, section, profileImage, title, body, image }) {
+    const confirmDelete = () => {
+        const currentUID = auth.currentUser.uid;
+        deleteDoc(doc(firedb, `users/${currentUID}/posts/${timeStamp}`))
+    }
+
+    const DeleteButton = () => {
+        const currentUID = auth.currentUser.uid;
+        if (userID == currentUID) {
+            return(
+                <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={() => deletePost()}
+                >
+                    <MaterialIcon name="delete" size={18} color={"black"}/>
+                </TouchableOpacity>
+            )
+        }else {
+            return null
+        }
+    }
+
     if (image == null || image == "") {
         return(
             <View style={styles.card}>
                 <View style={styles.userCont}>
-                    <View style={styles.profileImage}>
-                        {/* Insert Image */}
-                    </View>
+                    <Image source={profileImage != "" ? {uri: profileImage} : null} style={styles.profileImage} />
                     <View style={styles.userTitles}>
                         <Text style={{fontSize: 18, fontFamily: "Roboto_Bold"}}>{name}</Text>
-                        <Text>{strand} {section}</Text>
+                        <Text>{strand} - {section}</Text>
                     </View>
+                    <DeleteButton />
                 </View>
-                <Text style={[GlobalStyles.heading, styles.title, ]}>{title}</Text>
-                <Text style={[GlobalStyles.text, styles.description, ]}>{body}</Text>
-    
-                <Image image={image} />
-                <PostControl />
+                <Text style={[GlobalStyles.heading, styles.title]}>{title}</Text>
+                <Text style={[GlobalStyles.text]}>{body}</Text>
+
+                <PostControl likes={likes} dislikes={dislikes} comments={comments} userID={userID} postKey={postKey} timeStamp={timeStamp}/>
             </View>
         )
     }else {
         return(
             <View style={styles.card}>
                 <View style={styles.userCont}>
-                    <View style={styles.profileImage}>
-                        {/* Insert Image */}
-                    </View>
+                    <Image source={profileImage != "" ? {uri: profileImage} : null} style={styles.profileImage} />
                     <View style={styles.userTitles}>
                         <Text style={{fontSize: 18, fontFamily: "Roboto_Bold"}}>{name}</Text>
-                        <Text>{strand} {section}</Text>
+                        <Text>{strand} - {section}</Text>
                     </View>
+                    <DeleteButton />
                 </View>
                 <Text style={[GlobalStyles.heading, styles.title, ]}>{title}</Text>
-                <Text style={[GlobalStyles.text, styles.description, ]}>{body}</Text>
+                <Text style={[GlobalStyles.text]}>{body}</Text>
     
-                <PostControl />
+                <Image source={image != "" ? {uri: image} : null} style={styles.image} />
+                <PostControl likes={likes} dislikes={dislikes} comments={comments} userID={userID} postKey={postKey} timeStamp={timeStamp}/>
             </View>
         )
     }
@@ -76,9 +103,11 @@ const styles = StyleSheet.create({
     userCont: {
         flexDirection: "row",
         alignItems: "center",
+        justifyContent: "center",
     },
     userTitles: {
         flexDirection: "column",
+        flex: 5,
     },
     profileImage: {
         backgroundColor: "#aa0",
@@ -86,16 +115,19 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         marginRight: 10,
+        flex: 1,
     },
     title: {
         fontSize: 20,
     },
-    description: {
-
+    deleteButton: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 5,
     },
     image: {
         width: "100%",
-        backgroundColor: "#eee",
         height: 250,
         maxHeight: 250,
     }

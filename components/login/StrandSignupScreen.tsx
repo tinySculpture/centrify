@@ -6,8 +6,9 @@ import FormInput from './FormInput';
 import { Colors, DEVICE_WIDTH, GlobalStyles } from '../styles/GlobalStyles';
 import { RadioButton } from 'react-native-paper';
 import { collection, addDoc, getFirestore, setDoc, doc } from 'firebase/firestore'; 
-import { app, firedb } from '../firebase/firebase-config';
+import { app, firedb, storage } from '../firebase/firebase-config';
 import { initializeApp } from 'firebase/app';
+import { getDownloadURL, ref } from 'firebase/storage';
 
 
 
@@ -18,18 +19,25 @@ export default function StrandSignupScreen({ navigation, name, setName, email, s
     const [section, setSection] = useState();
     const [checkedStrand, setCheckedStrand] = useState<String>();
 
-    function getDocument() {
-        const usersRef = doc(firedb, "users", uid);
+    async function getDocument() {
+        const usersRef = doc(firedb, `users/${uid}`);
 
         try {
+            const storageRef = ref(storage);
+            const profileImageRef = await ref(storageRef, `profileImages/profile-placeholder.jpg`)
+            const tempProfileImage = "https://firebasestorage.googleapis.com/v0/b/centrify-c1219.appspot.com/o/profileImages%2Fprofile-placeholder.jpg?alt=media&token=05c182ff-ddf7-46f5-9a72-1101281cc71b"
             setDoc(usersRef, {
                 name: name,
                 email: email,
                 section: section,
                 strand: checkedStrand,
-                profileImage: "",
+                profileImage: tempProfileImage,
                 uid: uid,
             });
+            addDoc(collection(firedb, `${usersRef}/following/${uid}`), {
+                name: name,
+                uid: uid
+            })
             alert("Successfully Signed up")
             navigation.navigate('Login')
         } catch (e) {

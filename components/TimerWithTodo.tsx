@@ -8,8 +8,6 @@ import PomodoroTimer from "./PomodoroTimer";
 import { DEVICE_HEIGHT, GlobalStyles } from "./styles/GlobalStyles";
 import TodoList from "./TodoList";
 import uuid from 'react-native-uuid';
-
-
 import { auth, db } from "./firebase/firebase-config";
 
 export default function TimerWithTodo({ navigation }) {
@@ -28,12 +26,14 @@ export default function TimerWithTodo({ navigation }) {
 32
     const [todos, setTodos] = useState([]);
 
-    const currentUID = auth.currentUser.uid;
+    
     useEffect(() => {
+        const currentUID = auth.currentUser.uid;
         onValue(ref(db, `todos/${currentUID}`), (snapshot) => {
             if (snapshot.exists()) {
                 setTodos([]);
                 var data = snapshot.val();
+                console.log(data)
                 if (data !== null) {
                     Object.values(data).map((todo) => {
                         setTodos((prev) => [

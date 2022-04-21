@@ -62,7 +62,7 @@ export default function MainHeader({ name, current, setCurrent, createPost, curI
                 </TouchableOpacity>
             </View>
         )
-    }else {
+    }else if(current == "NewPost"){
         BackHandler.addEventListener("hardwareBackPress", function () {
             RootNavigation.navigate("Social");
             setCurrent("Social");
@@ -81,6 +81,44 @@ export default function MainHeader({ name, current, setCurrent, createPost, curI
                     onPress={ () => createPost() }
                 >
                     <Text style={{color: "#fff", fontFamily: "Roboto_Bold"}}>POST</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }else if(current == "EditProfile") {
+        BackHandler.addEventListener("hardwareBackPress", function () {
+            RootNavigation.navigate("Social");
+            setCurrent("Social");
+            return true;
+        });
+
+        return (
+            <View style={styles.navbar}>
+                <TouchableOpacity
+                    onPress={ () => goBack() }
+                >
+                    <MaterialIcon name="arrow-back-ios" size={20} color="#000" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.post}
+                    onPress={ () => console.log("Test") }
+                >
+                    <Text style={{color: "#fff", fontFamily: "Roboto_Bold"}}>Apply</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }else {
+        BackHandler.addEventListener("hardwareBackPress", function () {
+            RootNavigation.navigate("Social");
+            setCurrent("Social");
+            return true;
+        });
+
+        return (
+            <View style={styles.navbar}>
+                <TouchableOpacity
+                    onPress={ () => goBack() }
+                >
+                    <MaterialIcon name="arrow-back-ios" size={20} color="#000" />
                 </TouchableOpacity>
             </View>
         )

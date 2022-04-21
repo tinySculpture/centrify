@@ -23,10 +23,12 @@ import { navigationRef } from './RootNavigation';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import TimerWithTodo from './TimerWithTodo';
 import CreatePost from './profile/home_components/CreatePost';
-import { doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import { auth, firedb } from './firebase/firebase-config';
 import uuid from 'react-native-uuid';
 import * as RootNavigation from './RootNavigation';
+import EditProfile from './profile/EditProfile';
+import MessagingUI from './profile/MessagingUI';
 
 export default function MainContent({ navigation }) {
 
@@ -34,39 +36,39 @@ export default function MainContent({ navigation }) {
     const [image, setImage] = useState(null);
     const [title, setTitle] = useState("");
     const [body, setBody] = useState("");
+    const [likes, setLikes] = useState([]);
+    const [comments, setComments] = useState(0);
     const [key, setKey] = useState(uuid.v4());
     const [curIcon, setCurIcon] = useState("account-circle-outline");
 
-    const createPostProps = {
+    const [postProps, setPostProps] = useState({
         setTitle,
         setBody,
         image,
         setImage,
-    }
-
-    const postProps = {
-        title,
-        body,
-        image,
-    }
+    })
 
     const createPost = () => {
+        setKey(uuid.v4())
         const currentUID = auth.currentUser.uid;
-        setDoc(doc(firedb, `users/${currentUID}/posts`, `${key}`), {
+        setDoc(doc(firedb, `users/${currentUID}/posts/${Date.now()}`), {
             title: title,
             body: body,
             image: image,
+            likes: [currentUID],
+            comments: comments,
             key: key,
+            timeStamp: Date.now(),
         });
         setCurIcon('timer-outline');
         RootNavigation.navigate('Social');
         setCurrent("Social");
     }
 
-    const Social = ({ navigation }) => {
+    const Social = ({ navigation, current, setCurrent }) => {
         return(
             <SafeAreaView style={[styles.container, styles.mainCont]}>
-                <BottomNav {...postProps} />
+                <BottomNav current={current} setCurrent={setCurrent} />
             </SafeAreaView>
         )
     }
@@ -96,10 +98,23 @@ export default function MainContent({ navigation }) {
                             {(props) => <TimerWithTodo {...props} /> }
                         </socialStack.Screen>
                         <socialStack.Screen name="Social">
-                            {(props) => <Social {...props} /> }
+                            {(props) => <Social {...props} current={current} setCurrent={setCurrent}/> }
                         </socialStack.Screen>
                         <socialStack.Screen name="NewPost">
-                            {(props) => <CreatePost {...props} {...createPostProps} /> }
+                            {(props) => <CreatePost
+                                {...props}
+                                title={title}
+                                setTitle={setTitle}
+                                setBody={setBody}
+                                image={image}
+                                setImage={setImage}
+                                /> }
+                        </socialStack.Screen>
+                        <socialStack.Screen name="EditProfile">
+                            {(props) => <EditProfile {...props} /> }
+                        </socialStack.Screen>
+                        <socialStack.Screen name="Messaging">
+                            {(props) => <MessagingUI {...props} /> }
                         </socialStack.Screen>
                     </socialStack.Navigator>
                 </NavigationContainer>

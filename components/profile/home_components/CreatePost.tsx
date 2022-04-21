@@ -1,13 +1,18 @@
 import { collection, doc, getDocs, query, setDoc } from "firebase/firestore";
-import React, { useState } from "react";
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState } from "react";
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
-import { auth, firedb } from "../../firebase/firebase-config";
+import { auth, firedb, storage } from "../../firebase/firebase-config";
 import { Colors, DEVICE_WIDTH, GlobalStyles } from "../../styles/GlobalStyles";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
-export default function CreatePost({ navigation, setTitle, setBody, image, setImage }) {
+export default function CreatePost({ navigation, title, setTitle, setBody, image, setImage }) {
+
+    useEffect(() => {
+        setImage(null)
+    }, [])
 
     const addImageHandler = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -18,7 +23,27 @@ export default function CreatePost({ navigation, setTitle, setBody, image, setIm
         });
         if (!result.cancelled) {
             // Bugged in VSCode, dont mind me:
-            setImage(result.uri);
+            const currentUID = auth.currentUser.uid;
+            const currentTime = Date.now()
+            const storageRef = ref(storage, `postImages/${currentUID}/${title}-${currentTime}`);
+
+            const response = await fetch(result.uri);
+            const blob = await response.blob();
+
+            uploadBytes(storageRef, blob, {contentType: "image/jpeg"}).then((snapshot) => {
+                // console.log("File Uploaded.", snapshot.ref.fullPath)
+                const uploadRef = ref(storage, snapshot.ref.fullPath)
+                getDownloadURL(uploadRef).then((url) => {
+                    setImage(url);
+                })
+            })
+        }
+    }
+    const PostImage = () => {
+        if (image == "" || image == null || image == undefined) {
+            return(<View></View>);
+        }else {
+            return(<Image source={{uri: image}} style={styles.image} />)
         }
     }
 
@@ -45,7 +70,7 @@ export default function CreatePost({ navigation, setTitle, setBody, image, setIm
                     textAlignVertical="top"
                     onChangeText={(text) => setBody(text) }
                 />
-                <Image source={{uri: image}} style={styles.image} />
+                <PostImage />
             </View>
 
             
